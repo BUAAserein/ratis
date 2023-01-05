@@ -77,10 +77,8 @@ public class SnapshotManager {
         c -> smDir.relativize(new File(dir.getRoot(), c.getFilename()).toPath()).toString();
   }
 
-  public void installSnapshot(StateMachine stateMachine,
-      InstallSnapshotRequestProto request) throws IOException {
-    final InstallSnapshotRequestProto.SnapshotChunkProto snapshotChunkRequest =
-        request.getSnapshotChunk();
+  public void installSnapshot(InstallSnapshotRequestProto request, StateMachine stateMachine) throws IOException {
+    final InstallSnapshotRequestProto.SnapshotChunkProto snapshotChunkRequest = request.getSnapshotChunk();
     final long lastIncludedIndex = snapshotChunkRequest.getTermIndex().getIndex();
 
     // create a unique temporary directory
@@ -103,7 +101,7 @@ public class SnapshotManager {
       }
 
       final File tmpSnapshotFile = new File(tmpDir, getRelativePath.apply(chunk));
-      FileUtils.createDirectories(tmpSnapshotFile);
+      FileUtils.createDirectoriesDeleteExistingNonDirectory(tmpSnapshotFile.getParentFile());
 
       FileOutputStream out = null;
       try {
